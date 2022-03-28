@@ -1,0 +1,9 @@
+curses
+tkinter
+streamlit
+requests
+pandas
+numpy
+pydeck
+datetime
+matplotlib

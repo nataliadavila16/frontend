@@ -6,14 +6,25 @@ import pandas as pd
 import numpy as np
 from os import listdir
 from os.path import isfile, join
-from RainPredictionMachine.data import CleanDataRpm
 import pydeck as pdk
 import datetime
 import matplotlib.pyplot as plt
 
-# Use the full page instead of a narrow central column
-# st.set_page_config(layout="wide")
-# Space out the maps so the first one is 2x the size of the other three
+def classe_chuva(precipitacao):
+        mm=precipitacao
+        if np.isnan(mm):
+            chuva = "NaN"
+        if mm == 0:
+            chuva = 0 #'nao chove'
+        elif mm >0 and mm <=5.0:
+            chuva = 1 #'fraca'
+        elif mm >5.0 and mm<=25.0:
+            chuva = 'moderada'
+        elif mm >25.0 and mm<=50.0:
+            chuva = 'forte'
+        else:
+            chuva = 'muito forte'
+        return chuva
 
 st.set_option('deprecation.showPyplotGlobalUse', False)
 
@@ -32,7 +43,6 @@ dia1 = dia0 + delta  #dia para mais 24h
 
 st.write("### Previsão de chuva para as próximas 24h")
 
-data = CleanDataRpm()
 
 # d1 = st.date_input("Previsão para:", dia0, max_value = dia1, min_value=dia0)
 # # t1 = st.time_input('Hora', datetime.time(0, 0))
@@ -47,9 +57,6 @@ df_previsoes = pd.DataFrame(dado['Previsao'])
 hora = st.slider('', 0, 23)
 hora = str(hora)
 
-lat, lon, estacao, chuva_ultimahora = df_previsoes[[
-    'Latitude', 'Longitude', 'dc_nome', hora
-]]
 
 r, b, g = [], [], []
 print(df_previsoes[hora])
@@ -103,49 +110,34 @@ st.pydeck_chart(
              initial_view_state=view_state,
              map_style="mapbox://styles/mapbox/light-v10"))
 
-# cc1, cc2 = st.columns([2,4])
-st.write('#### ')
-st.write('### Tempo agora')
-option = st.selectbox(
-    'Escolha uma estação meteorológica',
-    ('BARRETOS', 'BARUERI', 'BAURU', 'BEBEDOURO', 'BERTIOGA',
-     'BRAGANCA PAULISTA', 'CACHOEIRA PAULISTA', 'CAMPOS DO JORDAO',
-     'CASA BRANCA', 'DRACENA', 'FRANCA', 'IGUAPE', 'ITAPEVA', 'ITAPIRA',
-     'ITATIAIA', 'ITUVERAVA', 'LINS', 'MARILIA', 'OURINHOS', 'PARATI',
-     'PIRACICABA', 'PRADOPOLIS', 'PRESIDENTE PRUDENTE', 'RANCHARIA',
-     'SAO CARLOS', 'SAO LUIS DO PARAITINGA', 'SAO MIGUEL ARCANJO',
-     'SAO PAULO - INTERLAGOS', 'SAO PAULO - MIRANTE', 'SAO SEBASTIAO',
-     'SAO SIMAO', 'SOROCABA', 'TAUBATE', 'TUPA', 'VALPARAISO', 'VOTUPORANGA'))
 
-# '''
+st.sidebar.write('### Tempo agora')
 
-# '''
 df = pd.DataFrame(dado['Passado'])
 
-n_cidade = data.cidades.index(option)
-# st.write('view',n_cidade)
-# df=data.clean_data(n_cidade)
-# # st.write('temp',df.Temp.iloc[-1])
+option = st.sidebar.selectbox(
+    'Escolha uma estação meteorológica',df.dc_nome.unique())
 
-# st.write(f"#### {option} {d1}")
+df = df[df['dc_nome']==option]
 
 if df.Chuva.iloc[-1] < 1:
-    st.write(f'#### Chuva:    {data.classe_chuva(df.Chuva.iloc[-1])}.')
+    st.sidebar.write(f'#### Chuva:    {classe_chuva(df.Chuva.iloc[-1])}.')
 if df.Chuva.iloc[-1] > 0 and df.Chuva.iloc[-1] < 25:
-    st.write(f'#### Chuva:    {data.classe_chuva(df.Chuva.iloc[-1])} ☔')
+    st.sidebar.write(f'#### Chuva:    {classe_chuva(df.Chuva.iloc[-1])} ☔')
 else:
-    st.write(f'#### Chuva:    {data.classe_chuva(df.Chuva.iloc[-1])} ⛈️')
+    st.sidebar.write(f'#### Chuva:    {classe_chuva(df.Chuva.iloc[-1])} ⛈️')
 
-col1, col2, col3, col4 = st.columns(4)
+
+col1, col2 = st.sidebar.columns(2)
 
 col1.metric("Temperatura", f'{df.Temp.iloc[-1]} °C',
             f'{round(df.Temp.iloc[-1]-df.Temp.iloc[-24],ndigits=1)} °C')
 col2.metric(
     "Vento", f'{round(df.Vel_vento.iloc[-1],ndigits=1)} m/s',
     f'{round(df.Vel_vento.iloc[-1]-df.Vel_vento.iloc[-24],ndigits=1)} m/s')
-col3.metric("Umidade", f'{df.Umid.iloc[-1]} %',
+col1.metric("Umidade", f'{df.Umid.iloc[-1]} %',
             f'{round(df.Umid.iloc[-1]-df.Umid.iloc[-24],ndigits=1)} %')
-col4.metric("Precipitação", f'{round(df.Chuva.iloc[-1],ndigits=1)} mm',
+col2.metric("Precipitação", f'{round(df.Chuva.iloc[-1],ndigits=1)} mm',
             f'{round(df.Chuva.iloc[-1]-df.Chuva.iloc[-24],ndigits=1)} mm')
 
 st.write('#### ')
