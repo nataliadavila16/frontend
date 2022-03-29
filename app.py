@@ -1,3 +1,4 @@
+from json import tool
 import streamlit as st
 import requests
 import pandas as pd
@@ -78,16 +79,18 @@ df_previsoes['g'] = g
 
 '''
 
+
 # Define a layer to display on a map
 layer = pdk.Layer('ScatterplotLayer',
                   df_previsoes,
-                  pickable=False,
-                  opacity=0.3,
+                  pickable=True,
+                  opacity=0.4,
                   stroked=True,
                   filled=True,
-                  radius_scale=1000,
+                  radius_scale=3000,
                   radius_min_pixels=5,
-                  radius_max_pixels=100,
+                  radius_max_pixels=200,
+                  auto_highlight=True,
                   line_width_min_pixels=1,
                   get_position=['Longitude', 'Latitude'],
                   get_radius=[hora],
@@ -97,7 +100,7 @@ layer = pdk.Layer('ScatterplotLayer',
 
 '''
 # Set the viewport location
-view_state = pdk.ViewState(latitude=-21.980353, longitude=-47.883927, zoom=5)
+view_state = pdk.ViewState(latitude=-21.980353, longitude=-47.883927, zoom=5,bearing=0)
 # st.subheader(f'Previsão de Chuva para SP em {dia0}')
 st.pydeck_chart(
     pdk.Deck(layers=[layer],
@@ -149,7 +152,7 @@ col2.metric("Precipitação", f'{round(df.Chuva.iloc[-1],ndigits=1)} mm',
             f'{round(df.Chuva.iloc[-1]-df.Chuva.iloc[-24],ndigits=1)} mm')
 
 st.write('#### ')
-original_titlep = f'<p style="color:black; font-size: 18px">Temperatura (°C), Vento (m/s), Umidade Relativa (%), e Chuma (mm) nas últimas 48h<br /> {option}<br />Fonte: INMET<p>'
+original_titlep = f'<p style="color:black; font-size: 18px">Chuva (mm), Temperatura (°C), Vento (m/s) e Umidade Relativa (%) nas últimas 48h<br /> {option}<br />Fonte: INMET<p>'
 pp=st.write(original_titlep, unsafe_allow_html=True)
 st.write('#### ')
 
