@@ -49,7 +49,7 @@ st.write("### Previsão de chuva para as próximas 24h")
 
 # c2.write('##### Hora:')
 hora = st.slider('', 1, 24)
-hora = str(hora)
+hora = str(hora-1)
 
 
 r, b, g = [], [], []
@@ -149,7 +149,7 @@ col2.metric("Precipitação", f'{round(df.Chuva.iloc[-1],ndigits=1)} mm',
             f'{round(df.Chuva.iloc[-1]-df.Chuva.iloc[-24],ndigits=1)} mm')
 
 st.write('#### ')
-original_titlep = '<p style="color:black; font-size: 20px">Temperatura °C, Vento m/s, Umidade Relativa %, e Chuma mm, nas últimas 48h<br />Fonte: INMET<p>'
+original_titlep = f'<p style="color:black; font-size: 18px">Temperatura (°C), Vento (m/s), Umidade Relativa (%), e Chuma (mm) nas últimas 48h<br /> {option}<br />Fonte: INMET<p>'
 pp=st.write(original_titlep, unsafe_allow_html=True)
 st.write('#### ')
 
@@ -236,11 +236,11 @@ plot_vento(x,df.Vel_vento)
 def plot_umi(x,umidade):
     fig = plt.figure(figsize=(20, 8))
     plt.plot(x,umidade,
-             color='green',
+             color='blue',
              linestyle='-',
              linewidth=1,
              marker='o',
-             markerfacecolor='green',
+             markerfacecolor='blue',
              markersize=7)
     plt.ylim(0, 110)
     plt.yticks(fontsize=20)
