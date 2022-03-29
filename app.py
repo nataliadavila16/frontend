@@ -1,4 +1,3 @@
-from curses.panel import bottom_panel
 from tkinter import W
 import streamlit as st
 import requests
@@ -67,7 +66,7 @@ for mm in df_previsoes[hora].tolist():
     elif mm > 25.0 and mm <= 50.0:
         cor = [139,10,80]
     else:
-        cor = [139,26,26]
+        cor = [220,20,60]
     r.append(cor[0])
     b.append(cor[1])
     g.append(cor[2])
@@ -110,7 +109,7 @@ original_title3 = '<p style="color:black; font-size: 14px">Não chove</p>'
 original_title4 = '<p style="color:#7FFF00; font-size: 14px">Chuva fraca:<br /> até 5 mm</p>'
 original_title5 = '<p style="color:	#1E90FF; font-size: 14px">Chuva moderada:<br /> 5 a 25 mm</p>'
 original_title6 = '<p style="color:#8B0A50; font-size: 14px">Chuva forte:<br /> 25 a 50 mm</p>'
-original_title7 = '<p style="color:#8B1A1A; font-size: 14px">Chuva muito forte:<br /> acima de 50 mm</p>'
+original_title7 = '<p style="color:#DC143C; font-size: 14px">Chuva muito forte:<br /> acima de 50 mm</p>'
 
 A=a.write(original_title3, unsafe_allow_html=True)
 B=b.write(original_title4, unsafe_allow_html=True)
@@ -150,7 +149,7 @@ col2.metric("Precipitação", f'{round(df.Chuva.iloc[-1],ndigits=1)} mm',
             f'{round(df.Chuva.iloc[-1]-df.Chuva.iloc[-24],ndigits=1)} mm')
 
 st.write('#### ')
-st.write('#### Temperatura °C, Vento m/s e Umidade Relativa % nas últimas 48h')
+st.write('#### Temperatura °C, Vento m/s, Umidade Relativa % e Chuma mm, nas últimas 48h')
 st.write('#### ')
 
 x=np.arange(-48, 0)

@@ -1,4 +1,3 @@
-curses
 tkinter
 streamlit
 requests
