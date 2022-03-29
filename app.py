@@ -8,6 +8,7 @@ import pydeck as pdk
 import datetime
 import matplotlib.pyplot as plt
 
+
 def classe_chuva(precipitacao):
         mm=precipitacao
         if np.isnan(mm):
@@ -152,7 +153,17 @@ original_titlep = '<p style="color:black; font-size: 20px">Temperatura °C, Vent
 pp=st.write(original_titlep, unsafe_allow_html=True)
 st.write('#### ')
 
-x=np.arange(-48, 0)
+tam=df.shape
+x=np.arange(-tam[0], 0)
+xti=np.arange(-48, 0)
+plt.style.use("ggplot")
+fig=plt.figure(figsize = (20, 8))
+plt.bar(x, df.Chuva, ec = "k", alpha = .6, color = "royalblue", fill=True)
+plt.xlabel('Horas Passadas', fontsize=20)
+plt.ylabel('Precipitação mm', fontsize=25)
+plt.xlim(-48, 0)
+plt.xticks(xti,fontsize=10)
+st.pyplot(fig)
 
 def plot_temp(x,min_t, max_t):
     fig = plt.figure(figsize=(20, 8))
@@ -172,7 +183,7 @@ def plot_temp(x,min_t, max_t):
              markersize=7)
     plt.ylim(min(min_t) - 2, max(max_t) + 2)
     plt.xlim(-48, 0)
-    plt.xticks(x,fontsize=10)
+    plt.xticks(xti,fontsize=10)
     plt.yticks(fontsize=20)
     plt.grid(True, color='brown')
     plt.legend(["Temperatura Máxima", "Temperatura Mínima"],
@@ -187,8 +198,6 @@ def plot_temp(x,min_t, max_t):
 
 # st.subheader('Temperatura do ar (°C) nos útimos sete dias')
 plot_temp(x,df.Temp_min, df.Temp_max)
-
-# breakpoint()
 
 '''
 
@@ -206,7 +215,7 @@ def plot_vento(x,vel_vento):
     plt.ylim(0, max(vel_vento) + 1)
     plt.yticks(fontsize=20)
     plt.xlim(-48, 0)
-    plt.xticks(x,fontsize=10)
+    plt.xticks(xti,fontsize=10)
     plt.grid(True, color='brown')
     plt.legend(["Intensidade do vento"], loc=0, fontsize=20)
     plt.xlabel('Horas Passadas', fontsize=20)
@@ -236,10 +245,10 @@ def plot_umi(x,umidade):
     plt.ylim(0, 110)
     plt.yticks(fontsize=20)
     plt.xlim(-48, 0)
-    plt.xticks(x,fontsize=10)
+    plt.xticks(xti,fontsize=10)
     plt.grid(True, color='brown')
     plt.legend(["Umidade Relativa %"], loc=0, fontsize=20)
-    # plt.xlabel('Data(mm/dd)')
+    plt.xlabel('Horas Passadas', fontsize=20)
     plt.ylabel('Umidade Relativa %', fontsize=25)
     # plt.title('6-Day Weather Forecast')
     st.pyplot(fig)
@@ -272,4 +281,4 @@ def plot_chuva(x,chuva):
 
 
 # st.subheader('Umidade Relativa % nos útimos sete dias')
-plot_chuva(x,df.Chuva)
+# plot_chuva(x,df.Chuva)

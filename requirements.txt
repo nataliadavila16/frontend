@@ -6,3 +6,4 @@ pydeck
 datetime
 matplotlib
 click==8.0.4
+schedule
