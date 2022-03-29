@@ -198,7 +198,7 @@ plot_temp(x,df.Temp_min, df.Temp_max)
 def plot_vento(x,vel_vento):
     fig = plt.figure(figsize=(20, 8))
     plt.plot(x,vel_vento,
-             color='blue',
+             color='red',
              linestyle='-',
              linewidth=1,
              marker='o',
@@ -227,7 +227,7 @@ plot_vento(x,df.Vel_vento)
 
 def plot_umi(x,umidade):
     fig = plt.figure(figsize=(20, 8))
-    plt.plot(x,umidade[-24 * 7:],
+    plt.plot(x,umidade,
              color='green',
              linestyle='-',
              linewidth=1,
@@ -249,3 +249,28 @@ def plot_umi(x,umidade):
 
 # st.subheader('Umidade Relativa % nos útimos sete dias')
 plot_umi(x,df.Umid)
+
+def plot_chuva(x,chuva):
+    fig = plt.figure(figsize=(20, 8))
+    plt.plot(x,chuva,
+             color='blue',
+             linestyle='-',
+             linewidth=1,
+             marker='o',
+             markerfacecolor='blue',
+             markersize=7)
+    plt.ylim(0, max(chuva))
+    plt.yticks(fontsize=20)
+    plt.xlim(-48, 0)
+    plt.xticks(x,fontsize=10)
+    plt.grid(True, color='brown')
+    plt.legend(["Precipitação %"], loc=0, fontsize=20)
+    # plt.xlabel('Data(mm/dd)')
+    plt.ylabel('Precipitação %', fontsize=25)
+    # plt.title('6-Day Weather Forecast')
+    st.pyplot(fig)
+    # return fig
+
+
+# st.subheader('Umidade Relativa % nos útimos sete dias')
+plot_chuva(x,df.Chuva)
