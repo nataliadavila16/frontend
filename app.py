@@ -15,7 +15,7 @@ def classe_chuva(precipitacao):
         if np.isnan(mm):
             chuva = "NaN"
         if mm == 0:
-            chuva = 0 #'nao chove'
+            chuva = 'nao chove'
         elif mm >0 and mm <=5.0:
             chuva = 1 #'fraca'
         elif mm >5.0 and mm<=25.0:
@@ -32,10 +32,14 @@ st.title('Alerta Chuva SP')
 
 st.write("### Atenção :warning:")
 
-original_title = '<p style="color:Red; font-size: 16px">Chuva forte ou muito forte paras as seguintes localidades:</p>'
+url = 'https://apirpm-2pjnslwdia-uc.a.run.app/bucket'
+dado = requests.get(url).json()
+df_previsoes = pd.DataFrame(dado['Previsao'])
+
+original_title = '<p style="color:Red; font-size: 16px">Chuva muito forte para as seguintes localidades:</p>'
 st.write(original_title, unsafe_allow_html=True)
 
-# st.write("Chuva forte ou muito forte paras as seguintes localidades: ")
+df = pd.DataFrame(dado['Passado'])
 
 dia0 = datetime.date.today()  #dia corrente
 delta = datetime.timedelta(days=1)  #espaço de tempo
@@ -44,17 +48,8 @@ dia1 = dia0 + delta  #dia para mais 24h
 st.write("### Previsão de chuva para as próximas 24h")
 
 
-# d1 = st.date_input("Previsão para:", dia0, max_value = dia1, min_value=dia0)
-# # t1 = st.time_input('Hora', datetime.time(0, 0))
-
-url = 'https://apirpm-2pjnslwdia-uc.a.run.app/bucket'
-dado = requests.get(url).json()
-df_previsoes = pd.DataFrame(dado['Previsao'])
-
-# df_previsoes=pd.read_csv('exemplo_nat_all.csv')
-
 # c2.write('##### Hora:')
-hora = st.slider('', 0, 23)
+hora = st.slider('', 1, 24)
 hora = str(hora)
 
 
@@ -66,13 +61,13 @@ for mm in df_previsoes[hora].tolist():
     if mm < 1:
         cor = [0, 0, 0]
     elif mm >= 1 and mm <= 5.0:
-        cor = [128, 255, 0]
+        cor = [127,255,0]
     elif mm > 5.0 and mm <= 25.0:
-        cor = [0, 191, 255]
+        cor = [30,144,255]
     elif mm > 25.0 and mm <= 50.0:
-        cor = [191, 0, 255]
+        cor = [139,10,80]
     else:
-        cor = [255, 0, 0]
+        cor = [139,26,26]
     r.append(cor[0])
     b.append(cor[1])
     g.append(cor[2])
@@ -110,23 +105,37 @@ st.pydeck_chart(
              initial_view_state=view_state,
              map_style="mapbox://styles/mapbox/light-v10"))
 
+a,b,c,d,e =st.columns(5)
+original_title3 = '<p style="color:black; font-size: 14px">Não chove</p>'
+original_title4 = '<p style="color:#7FFF00; font-size: 14px">Chuva fraca:<br /> até 5 mm</p>'
+original_title5 = '<p style="color:	#1E90FF; font-size: 14px">Chuva moderada:<br /> 5 a 25 mm</p>'
+original_title6 = '<p style="color:#8B0A50; font-size: 14px">Chuva forte:<br /> 25 a 50 mm</p>'
+original_title7 = '<p style="color:#8B1A1A; font-size: 14px">Chuva muito forte:<br /> acima de 50 mm</p>'
 
-st.sidebar.write('### Tempo agora')
+A=a.write(original_title3, unsafe_allow_html=True)
+B=b.write(original_title4, unsafe_allow_html=True)
+C=c.write(original_title5, unsafe_allow_html=True)
+D=d.write(original_title6, unsafe_allow_html=True)
+E=e.write(original_title7, unsafe_allow_html=True)
 
-df = pd.DataFrame(dado['Passado'])
-
+t= datetime.datetime.now()
+t=t.strftime("%Y-%m-%d  %H")
+original_title2 = f'<p style="font-size: 28px">Tempo agora</p>'
+st.sidebar.write(original_title2, unsafe_allow_html=True)
+st.sidebar.write(f'{t}h')
 option = st.sidebar.selectbox(
     'Escolha uma estação meteorológica',df.dc_nome.unique())
 
 df = df[df['dc_nome']==option]
 
 if df.Chuva.iloc[-1] < 1:
-    st.sidebar.write(f'#### Chuva:    {classe_chuva(df.Chuva.iloc[-1])}.')
-if df.Chuva.iloc[-1] > 0 and df.Chuva.iloc[-1] < 25:
-    st.sidebar.write(f'#### Chuva:    {classe_chuva(df.Chuva.iloc[-1])} ☔')
-else:
-    st.sidebar.write(f'#### Chuva:    {classe_chuva(df.Chuva.iloc[-1])} ⛈️')
+    st.sidebar.write(f'#### Chuva:    {classe_chuva(df.Chuva.iloc[-1])} 😀')
 
+if df.Chuva.iloc[-1] >=1 and df.Chuva.iloc[-1] <= 25:
+    st.sidebar.write(f'#### Chuva:    {classe_chuva(df.Chuva.iloc[-1])} ☔')
+
+if df.Chuva.iloc[-1] > 25:
+    st.sidebar.write(f'#### Chuva:    {classe_chuva(df.Chuva.iloc[-1])} ⛈️')
 
 col1, col2 = st.sidebar.columns(2)
 
@@ -141,25 +150,21 @@ col2.metric("Precipitação", f'{round(df.Chuva.iloc[-1],ndigits=1)} mm',
             f'{round(df.Chuva.iloc[-1]-df.Chuva.iloc[-24],ndigits=1)} mm')
 
 st.write('#### ')
-st.write('#### Temperatura °C, Vento m/s e Umidade Relativa % nas últimas 72h')
+st.write('#### Temperatura °C, Vento m/s e Umidade Relativa % nas últimas 48h')
 st.write('#### ')
 
-hora_now = datetime.datetime.now()
-dia_atual = hora_now.strftime("%Y-%m-%d")
-dia_pas = (hora_now - datetime.timedelta(days=3)).strftime("%d-%HH")
-df['datahora'] = dia_pas
+x=np.arange(-48, 0)
 
-
-def plot_temp(min_t, max_t):
+def plot_temp(x,min_t, max_t):
     fig = plt.figure(figsize=(20, 8))
-    plt.plot(max_t,
+    plt.plot(x,max_t,
              color='green',
              linestyle='dashdot',
              linewidth=1,
              marker='o',
              markerfacecolor='red',
              markersize=7)
-    plt.plot(min_t,
+    plt.plot(x,min_t,
              color='orange',
              linestyle='dashdot',
              linewidth=1,
@@ -167,13 +172,14 @@ def plot_temp(min_t, max_t):
              markerfacecolor='blue',
              markersize=7)
     plt.ylim(min(min_t) - 2, max(max_t) + 2)
-    # plt.xticks(fontsize=20)
+    plt.xlim(-48, 0)
+    plt.xticks(x,fontsize=10)
     plt.yticks(fontsize=20)
     plt.grid(True, color='brown')
     plt.legend(["Temperatura Máxima", "Temperatura Mínima"],
                loc=0,
                fontsize=20)
-    # plt.xlabel('Data(mm/dd)')
+    plt.xlabel('Horas passadas',fontsize=20)
     plt.ylabel('Temperatura °C', fontsize=25)
     # plt.title('6-Day Weather Forecast')
     st.pyplot(fig)
@@ -181,15 +187,17 @@ def plot_temp(min_t, max_t):
 
 
 # st.subheader('Temperatura do ar (°C) nos útimos sete dias')
-plot_temp(df.Temp_min, df.Temp_max)
+plot_temp(x,df.Temp_min, df.Temp_max)
+
+# breakpoint()
+
 '''
 
 
 '''
-def plot_vento(days, vel_vento):
+def plot_vento(x,vel_vento):
     fig = plt.figure(figsize=(20, 8))
-    plt.plot(days[-24 * 7:],
-             vel_vento[-24 * 7:],
+    plt.plot(x,vel_vento,
              color='blue',
              linestyle='-',
              linewidth=1,
@@ -197,11 +205,12 @@ def plot_vento(days, vel_vento):
              markerfacecolor='blue',
              markersize=7)
     plt.ylim(0, max(vel_vento) + 1)
-    plt.xticks(fontsize=20)
     plt.yticks(fontsize=20)
+    plt.xlim(-48, 0)
+    plt.xticks(x,fontsize=10)
     plt.grid(True, color='brown')
     plt.legend(["Intensidade do vento"], loc=0, fontsize=20)
-    # plt.xlabel('Data(mm/dd)')
+    plt.xlabel('Horas Passadas', fontsize=20)
     plt.ylabel('Vento m/s', fontsize=25)
     # plt.title('6-Day Weather Forecast')
     st.pyplot(fig)
@@ -209,17 +218,16 @@ def plot_vento(days, vel_vento):
 
 
 # st.subheader('Intensidade do vento (m/s) nos útimos sete dias')
-plot_vento(df.datahora, df.Vel_vento)
+plot_vento(x,df.Vel_vento)
 '''
 
 
 '''
 
 
-def plot_umi(days, umidade):
+def plot_umi(x,umidade):
     fig = plt.figure(figsize=(20, 8))
-    plt.plot(days[-24 * 7:],
-             umidade[-24 * 7:],
+    plt.plot(x,umidade[-24 * 7:],
              color='green',
              linestyle='-',
              linewidth=1,
@@ -227,8 +235,9 @@ def plot_umi(days, umidade):
              markerfacecolor='green',
              markersize=7)
     plt.ylim(0, 110)
-    plt.xticks(fontsize=20)
     plt.yticks(fontsize=20)
+    plt.xlim(-48, 0)
+    plt.xticks(x,fontsize=10)
     plt.grid(True, color='brown')
     plt.legend(["Umidade Relativa %"], loc=0, fontsize=20)
     # plt.xlabel('Data(mm/dd)')
@@ -239,4 +248,4 @@ def plot_umi(days, umidade):
 
 
 # st.subheader('Umidade Relativa % nos útimos sete dias')
-plot_umi(df.datahora, df.Umid)
+plot_umi(x,df.Umid)
