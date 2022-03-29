@@ -34,8 +34,8 @@ url = 'https://apirpm-2pjnslwdia-uc.a.run.app/bucket'
 dado = requests.get(url).json()
 df_previsoes = pd.DataFrame(dado['Previsao'])
 
-original_title = '<p style="color:Red; font-size: 16px">Chuva muito forte para as seguintes localidades:</p>'
-st.write(original_title, unsafe_allow_html=True)
+# original_title = '<p style="color:Red; font-size: 16px">Chuva muito forte para as seguintes localidades:</p>'
+# st.write(original_title, unsafe_allow_html=True)
 
 df = pd.DataFrame(dado['Passado'])
 
@@ -116,7 +116,7 @@ C=c.write(original_title5, unsafe_allow_html=True)
 D=d.write(original_title6, unsafe_allow_html=True)
 E=e.write(original_title7, unsafe_allow_html=True)
 
-t= datetime.datetime.now()
+t= datetime.datetime.now()-datetime.timedelta(hours=3)
 t=t.strftime("%Y-%m-%d  %H")
 original_title2 = f'<p style="font-size: 28px">Tempo agora</p>'
 st.sidebar.write(original_title2, unsafe_allow_html=True)
@@ -127,13 +127,13 @@ option = st.sidebar.selectbox(
 df = df[df['dc_nome']==option]
 
 if df.Chuva.iloc[-1] < 1:
-    st.sidebar.write(f'#### Chuva:    {classe_chuva(df.Chuva.iloc[-1])} 😀')
+    st.sidebar.write(f'#### Sem chuva 😀')
 
 if df.Chuva.iloc[-1] >=1 and df.Chuva.iloc[-1] <= 25:
-    st.sidebar.write(f'#### Chuva:    {classe_chuva(df.Chuva.iloc[-1])} ☔')
+    st.sidebar.write(f'#### {classe_chuva(df.Chuva.iloc[-1])} ☔')
 
 if df.Chuva.iloc[-1] > 25:
-    st.sidebar.write(f'#### Chuva:    {classe_chuva(df.Chuva.iloc[-1])} ⛈️')
+    st.sidebar.write(f'#### {classe_chuva(df.Chuva.iloc[-1])} ⛈️')
 
 col1, col2 = st.sidebar.columns(2)
 
@@ -148,7 +148,8 @@ col2.metric("Precipitação", f'{round(df.Chuva.iloc[-1],ndigits=1)} mm',
             f'{round(df.Chuva.iloc[-1]-df.Chuva.iloc[-24],ndigits=1)} mm')
 
 st.write('#### ')
-st.write('#### Temperatura °C, Vento m/s, Umidade Relativa % e Chuma mm, nas últimas 48h')
+original_titlep = '<p style="color:black; font-size: 20px">Temperatura °C, Vento m/s, Umidade Relativa %, e Chuma mm, nas últimas 48h<br />Fonte: INMET<p>'
+pp=st.write(original_titlep, unsafe_allow_html=True)
 st.write('#### ')
 
 x=np.arange(-48, 0)
